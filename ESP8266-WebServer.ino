@@ -6,8 +6,8 @@
 #include <ESP8266WiFi.h>
 
 // Substituir pelas credenciais da rede
-const char* ssid     = "ALTERAR_PELO_SSID_DA_REDE";
-const char* password = "SENHA_DA_REDE";
+const char* ssid     = "4Varell@";
+const char* password = "vanguard0906";
 
 // Iniciar o servidor web na porta 80
 WiFiServer server(80);
@@ -81,24 +81,31 @@ void loop(){
             client.println();
             
             // lia e desliga as GPIOs
-            if (header.indexOf("GET /5/on") >= 0) {
-              Serial.println("GPIO 5 on");
+            if (header.indexOf("GET /5/Frente") >= 0) {
+              Serial.println("Frente");
               EstadoD1 = "on";
               digitalWrite(D1, HIGH);
-            } else if (header.indexOf("GET /5/off") >= 0) {
-              Serial.println("GPIO 5 off");
-              EstadoD1 = "off";
-              digitalWrite(D1, LOW);
-            } else if (header.indexOf("GET /4/on") >= 0) {
-              Serial.println("GPIO 4 on");
-              EstadoD2 = "on";
               digitalWrite(D2, HIGH);
-            } else if (header.indexOf("GET /4/off") >= 0) {
-              Serial.println("GPIO 4 off");
-              EstadoD2 = "off";
+            } else if (header.indexOf("GET /5/Tras") >= 0) {
+              Serial.println("Tras");
+              EstadoD1 = "on";
+              delay(1000);
+              digitalWrite(D1, LOW);
               digitalWrite(D2, LOW);
-            }
-            
+            } else if (header.indexOf("GET /5/Direita") >= 0) {
+              Serial.println("Direita");
+              delay(1000);
+              EstadoD1 = "on";
+              digitalWrite(D2, LOW);
+              digitalWrite(D1, HIGH);
+            } else if (header.indexOf("GET /5/Esquerda") >= 0) {
+              Serial.println("Esquerda");
+              delay(1000);
+              EstadoD1 = "on";
+              digitalWrite(D1, LOW);
+              digitalWrite(D2, HIGH);
+            } 
+        
             // Exibe a pagina web HTML 
             client.println("<!DOCTYPE html><html>");
             client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
@@ -106,32 +113,29 @@ void loop(){
             // CSS para estilizar os botões liga/desliga
             // Sinta-se à vontade para alterar os atributos de cor de fundo e tamanho da fonte para atender às suas preferências
             client.println("<style>html { font-family: Verdana; display: inline-block; margin: 0px auto; text-align: center;}");
-            client.println(".button { background-color: #000000; border: none; color: white; padding: 16px 40px;");
+            client.println(".button { background-color: #302a75; border: none; color: white; padding: 16px 40px;");
             client.println("text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}");
-            client.println(".button2 {background-color: #273336;}</style></head>");
+            client.println("</style></head>");
             
             // Título da página da web
-            client.println("<body><h1>Servidor Web ESP8266</h1>");
-            
-            // Exibir o estado atual e botões ON/OFF para GPIO 5  
-            client.println("<p>Estado do GPIO 5 (D1): " + EstadoD1 + "</p>");
-            // Se o EstadoD1 estiver desligado, exibe o botão ON       
-            if (EstadoD1=="off") {
-              client.println("<p><a href=\"/5/on\"><button class=\"button\">ON</button></a></p>");
-            } else {
-              client.println("<p><a href=\"/5/off\"><button class=\"button button2\">OFF</button></a></p>");
+            client.println("<body><h1>RoboCop Sinistro</h1>");
+          
+
+            if (EstadoD1=="off" || EstadoD1=="on") {
+              client.println("<p><a href=\"/5/Frente\"><button class=\"button\">Frente</button></a></p>");
             } 
-               
-            // Exibir o estado atual e botões ON/OFF para GPIO 4
-            client.println("<p>Estado do GPIO 4 (D2): " + EstadoD2 + "</p>");
-            // Se o EstadoD2 estiver desligado, exibe o botão ON
-            if (EstadoD2=="off") {
-              client.println("<p><a href=\"/4/on\"><button class=\"button\">ON</button></a></p>");
-            } else {
-              client.println("<p><a href=\"/4/off\"><button class=\"button button2\">OFF</button></a></p>");
-            }
-            client.println("</body></html>");
-            
+
+            if (EstadoD1=="off" || EstadoD1=="on") {
+              client.println("<p><a href=\"/5/Tras\"><button class=\"button\">Tras</button></a></p>");
+            } 
+
+            if (EstadoD1=="off" || EstadoD1=="on") {
+              client.println("<p><a href=\"/5/Direita\"><button class=\"button\">Direita</button></a></p>");
+            } 
+
+            if (EstadoD1=="off" || EstadoD1=="on") {
+              client.println("<p><a href=\"/5/Esquerda\"><button class=\"button\">Esquerda</button></a></p>");
+            } 
             // A resposta HTTP termina com outra linha em branco
             client.println();
             // Saida do loop
