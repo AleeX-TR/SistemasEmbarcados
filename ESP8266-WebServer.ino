@@ -6,8 +6,8 @@
 #include <ESP8266WiFi.h>
 
 // Substituir pelas credenciais da rede
-const char* ssid     = "4Varell@";
-const char* password = "vanguard0906";
+const char* ssid     = "Etec-IoT";
+const char* password = "etecjb*123";
 
 // Iniciar o servidor web na porta 80
 WiFiServer server(80);
