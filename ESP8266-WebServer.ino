@@ -19,9 +19,18 @@ String header;
 String EstadoD1 = "off";
 String EstadoD2 = "off";
 
-// Atribuir variáveis ​​de saída aos pinos GPIO
-const int D1 = 5;
-const int D2 = 4;
+// Atribuições Motores
+const int motorA1  = 5;  //D1
+const int motorA2  = 4;  //D2  
+const int motorB1  = 14; //D5  
+const int motorB2  = 12; //D6
+
+// Others Var
+int i = 0;
+int j = 0;
+int state_rec;
+int vSpeed = 200;   // Define velocidade padrão 0 &lt; x &lt; 255.
+char state;
 
 // Hora atual
 unsigned long currentTime = millis();
@@ -33,11 +42,16 @@ const long timeoutTime = 2000;
 void setup() {
   Serial.begin(115200);
   // Inicializa as saidas
-  pinMode(D1, OUTPUT);
-  pinMode(D2, OUTPUT);
+  pinMode(motorA1, OUTPUT);
+  pinMode(motorA2, OUTPUT);
+  pinMode(motorB1, OUTPUT);
+  pinMode(motorB2, OUTPUT);
+
   // Desliga as saidas
-  digitalWrite(D1, LOW);
-  digitalWrite(D2, LOW);
+  digitalWrite(motorA1, LOW);
+  digitalWrite(motorA2, LOW);
+  digitalWrite(motorB1, LOW);
+  digitalWrite(motorB2, LOW);
 
   // Conecta a rede WiFi
   Serial.print("Conectando a rede ");
@@ -80,32 +94,48 @@ void loop(){
             client.println("Connection: close");
             client.println();
             
-            // lia e desliga as GPIOs
+            // Liga e desliga os Motores
             if (header.indexOf("GET /5/Frente") >= 0) {
               Serial.println("Frente");
               EstadoD1 = "on";
-              digitalWrite(D1, HIGH);
-              digitalWrite(D2, HIGH);
+              analogWrite(motorB1, vSpeed);
+              analogWrite(motorA1, vSpeed);
+              analogWrite(motorA2, 0);
+              analogWrite(motorB2, 0);
             } else if (header.indexOf("GET /5/Tras") >= 0) {
               Serial.println("Tras");
               EstadoD1 = "on";
               delay(1000);
-              digitalWrite(D1, LOW);
-              digitalWrite(D2, LOW);
+              analogWrite(motorB1, 0);
+              analogWrite(motorA1, 0);
+              analogWrite(motorA2, vSpeed);
+              analogWrite(motorB2, vSpeed);
             } else if (header.indexOf("GET /5/Direita") >= 0) {
               Serial.println("Direita");
               delay(1000);
               EstadoD1 = "on";
-              digitalWrite(D2, LOW);
-              digitalWrite(D1, HIGH);
+              analogWrite(motorB1, 100);
+              analogWrite(motorA1, 0);
+              analogWrite(motorA2, vSpeed);
+              analogWrite(motorB2, 0);
             } else if (header.indexOf("GET /5/Esquerda") >= 0) {
               Serial.println("Esquerda");
               delay(1000);
               EstadoD1 = "on";
-              digitalWrite(D1, LOW);
-              digitalWrite(D2, HIGH);
+              analogWrite(motorB1, vSpeed);
+              analogWrite(motorA1, 0);
+              analogWrite(motorA2, 100);
+              analogWrite(motorB2, 0);
+            } else if (header.indexOf("GET /5/Parar") >= 0) {
+              Serial.println("Parar");
+              delay(1000);
+              EstadoD1 = "on";
+              analogWrite(motorB1, 0);
+              analogWrite(motorA1, 0);
+              analogWrite(motorA2, 0);
+              analogWrite(motorB2, 0);
             } 
-        
+           
             // Exibe a pagina web HTML 
             client.println("<!DOCTYPE html><html>");
             client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
@@ -118,7 +148,7 @@ void loop(){
             client.println("</style></head>");
             
             // Título da página da web
-            client.println("<body><h1>RoboCop Sinistro</h1>");
+            client.println("<body><h1>Robo Sinistro</h1>");
           
 
             if (EstadoD1=="off" || EstadoD1=="on") {
@@ -135,6 +165,10 @@ void loop(){
 
             if (EstadoD1=="off" || EstadoD1=="on") {
               client.println("<p><a href=\"/5/Esquerda\"><button class=\"button\">Esquerda</button></a></p>");
+            } 
+
+            if (EstadoD1=="off" || EstadoD1=="on") {
+              client.println("<p><a href=\"/5/Parar\"><button class=\"button\">Parar</button></a></p>");
             } 
             // A resposta HTTP termina com outra linha em branco
             client.println();
